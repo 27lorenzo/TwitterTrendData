@@ -1,0 +1,8 @@
+FROM python:3.9
+WORKDIR /app
+COPY 3_load_to_S3.py .
+COPY config.py .
+COPY config_hidden.ini .
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+CMD ["python", "3_load_to_S3.py"]

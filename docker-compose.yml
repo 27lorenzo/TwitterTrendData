@@ -1,0 +1,42 @@
+version: '3'
+services:
+  extract_to_mongo:
+    build:
+      context: .
+      dockerfile: Dockerfile.1_extract_to_mongo
+    image: extract_to_mongo_image
+    container_name: extract_to_mongo_container
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      - mongo
+
+  calculate_trend:
+    build:
+      context: .
+      dockerfile: Dockerfile.2_calculate_trend
+    image: calculate_trend_image
+    container_name: calculate_trend_container
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      - extract_to_mongo
+
+  load_to_s3:
+    build:
+      context: .
+      dockerfile: Dockerfile.3_load_to_S3
+    image: load_to_s3_image
+    container_name: load_to_s3_container
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      - calculate_trend
+
+  mongo:
+    image: mongo:4.4.24
+    container_name: mongo_container
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./mongo-data:/data/db
